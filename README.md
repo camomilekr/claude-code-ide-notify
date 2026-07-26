@@ -47,7 +47,13 @@ macOS 알림은 **클릭 대상을 지정할 수 없고**, "알림을 보낸 앱
 수동 빌드:
 
 ```bash
-bash ~/.claude/plugins/.../ide-notify/scripts/build-notifier.sh
+bash ~/.claude/plugins/cache/camomilekr/ide-notify/1.0.0/scripts/build-notifier.sh
+```
+
+경로의 `camomilekr`는 마켓플레이스 이름, `1.0.0`은 플러그인 버전이라 환경에 따라 다릅니다. 확인하려면:
+
+```bash
+ls -d ~/.claude/plugins/cache/*/ide-notify/*/
 ```
 
 ### 시도했다가 안 된 방법 (기록)
@@ -74,8 +80,8 @@ bash ~/.claude/plugins/.../ide-notify/scripts/build-notifier.sh
 **알림이 안 뜬다**
 
 ```bash
-CLAUDE_NOTIFY_DEBUG=1 echo '{"message":"test"}' | \
-  ~/.claude/plugins/.../ide-notify/scripts/notify.sh input
+echo '{"message":"test"}' | CLAUDE_NOTIFY_DEBUG=1 \
+  ~/.claude/plugins/cache/camomilekr/ide-notify/1.0.0/scripts/notify.sh input
 cat ~/.claude/ide-notify/notifier.log
 ```
 
