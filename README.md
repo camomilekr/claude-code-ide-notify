@@ -8,17 +8,13 @@ macOS에서는 알림을 클릭하면 **세션을 띄운 터미널/IDE로 포커
 
 ```bash
 # 마켓플레이스 등록
-claude plugin marketplace add camomilekr/claude-code-ide-notify
+claude plugin marketplace add camomilekr/claude-code-plugins
 
 # 플러그인 설치
-claude plugin install ide-notify@ide-notify-marketplace
+claude plugin install ide-notify@camomilekr
 ```
 
-로컬 체크아웃에서 쓰려면 경로를 대신 넘기면 됩니다.
-
-```bash
-claude plugin marketplace add ~/projects/claude-code-ide-notify
-```
+마켓플레이스 정의는 [camomilekr/claude-code-plugins](https://github.com/camomilekr/claude-code-plugins)에 있습니다.
 
 설치 후 첫 알림이 발생할 때 macOS 알림 권한 프롬프트가 한 번 뜹니다. **허용**을 눌러 주세요.
 
@@ -94,7 +90,6 @@ cat ~/.claude/ide-notify/notifier.log
 ```
 .claude-plugin/
   plugin.json          플러그인 매니페스트
-  marketplace.json     단일 플러그인 마켓플레이스 정의
 hooks/
   hooks.json           Stop / Notification 훅 등록
 scripts/
