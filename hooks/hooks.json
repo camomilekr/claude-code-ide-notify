@@ -11,12 +11,23 @@
         ]
       }
     ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/notify.sh subagent-start",
+            "async": true
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/notify.sh subagent",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/notify.sh subagent-stop",
             "async": true
           }
         ]

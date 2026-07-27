@@ -1,6 +1,6 @@
 # IDE Notify
 
-Claude Code가 **작업을 마쳤을 때**, **서브에이전트가 작업을 끝냈을 때**, 그리고 **승인·결정을 기다릴 때** 시스템 알림을 보내는 플러그인입니다.
+Claude Code가 **작업을 마쳤을 때**, **서브에이전트가 작업을 시작·완료했을 때**, 그리고 **승인·결정을 기다릴 때** 시스템 알림을 보내는 플러그인입니다.
 
 macOS에서는 알림을 클릭하면 **세션을 띄운 터미널/IDE로 포커스가 이동**합니다. (Cursor, VS Code, iTerm2, Terminal, Ghostty, WezTerm 등 자동 감지)
 
@@ -23,16 +23,23 @@ claude plugin install ide-notify@camomilekr
 | 이벤트 | 시점 |
 |---|---|
 | `Stop` | Claude가 모든 작업을 마쳤을 때 |
+| `SubagentStart` | 서브에이전트 하나가 작업을 시작했을 때 (알림에 에이전트 이름 표시) |
 | `SubagentStop` | 서브에이전트 하나가 작업을 마쳤을 때 (알림에 에이전트 이름 표시) |
 | `Notification` | 승인 요청 / 결정 대기 / 입력 대기 (`permission_prompt`, `elicitation_dialog`, `agent_needs_input`) |
 
-세 훅 모두 `async`라 알림 발송이 세션을 붙잡지 않습니다.
+네 훅 모두 `async`라 알림 발송이 세션을 붙잡지 않습니다.
 
-`SubagentStop`은 모든 서브에이전트에 대해 울립니다. 서브에이전트를 여러 개 병렬로 띄우면 그만큼 알림이 옵니다. 특정 에이전트만 받고 싶다면 `hooks/hooks.json`의 `SubagentStop` 항목에 `matcher`를 추가하세요. matcher는 에이전트 이름(`agent_type`)에 정규식으로 매칭됩니다.
+### 서브에이전트 알림 줄이기
 
-```json
-{ "matcher": "^(code-reviewer|Plan)$", "hooks": [ ... ] }
-```
+`SubagentStart`/`SubagentStop`은 모든 서브에이전트에 대해 울립니다. 에이전트 하나당 시작·완료 두 번이고, 병렬로 여러 개를 띄우면 그만큼 곱해집니다. 시끄럽다면 `hooks/hooks.json`에서 조절하세요.
+
+- **특정 에이전트만** — 해당 항목에 `matcher`를 추가합니다. 에이전트 이름(`agent_type`)에 정규식으로 매칭됩니다.
+
+  ```json
+  { "matcher": "^(code-reviewer|Plan)$", "hooks": [ ... ] }
+  ```
+
+- **완료 알림만** — `SubagentStart` 항목을 통째로 지웁니다.
 
 ## 플랫폼별 지원
 
@@ -54,10 +61,10 @@ macOS 알림은 **클릭 대상을 지정할 수 없고**, "알림을 보낸 앱
 수동 빌드:
 
 ```bash
-bash ~/.claude/plugins/cache/camomilekr/ide-notify/1.0.0/scripts/build-notifier.sh
+bash ~/.claude/plugins/cache/camomilekr/ide-notify/1.0.1/scripts/build-notifier.sh
 ```
 
-경로의 `camomilekr`는 마켓플레이스 이름, `1.0.0`은 플러그인 버전이라 환경에 따라 다릅니다. 확인하려면:
+경로의 `camomilekr`는 마켓플레이스 이름, `1.0.1`은 플러그인 버전이라 환경에 따라 다릅니다. 확인하려면:
 
 ```bash
 ls -d ~/.claude/plugins/cache/*/ide-notify/*/
@@ -88,7 +95,7 @@ ls -d ~/.claude/plugins/cache/*/ide-notify/*/
 
 ```bash
 echo '{"message":"test"}' | CLAUDE_NOTIFY_DEBUG=1 \
-  ~/.claude/plugins/cache/camomilekr/ide-notify/1.0.0/scripts/notify.sh input
+  ~/.claude/plugins/cache/camomilekr/ide-notify/1.0.1/scripts/notify.sh input
 cat ~/.claude/ide-notify/notifier.log
 ```
 
@@ -104,7 +111,7 @@ cat ~/.claude/ide-notify/notifier.log
 .claude-plugin/
   plugin.json          플러그인 매니페스트
 hooks/
-  hooks.json           Stop / SubagentStop / Notification 훅 등록
+  hooks.json           Stop / SubagentStart / SubagentStop / Notification 훅 등록
 scripts/
   notify.sh            알림 발송 (플랫폼 분기 + 폴백)
   build-notifier.sh    ClaudeCodeNotifier.app 빌드
