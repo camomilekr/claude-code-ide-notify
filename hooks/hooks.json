@@ -11,6 +11,17 @@
         ]
       }
     ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/notify.sh subagent",
+            "async": true
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "permission_prompt|elicitation_dialog|agent_needs_input",

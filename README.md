@@ -1,6 +1,6 @@
 # IDE Notify
 
-Claude Code가 **작업을 마쳤을 때**, 그리고 **승인·결정을 기다릴 때** 시스템 알림을 보내는 플러그인입니다.
+Claude Code가 **작업을 마쳤을 때**, **서브에이전트가 작업을 끝냈을 때**, 그리고 **승인·결정을 기다릴 때** 시스템 알림을 보내는 플러그인입니다.
 
 macOS에서는 알림을 클릭하면 **세션을 띄운 터미널/IDE로 포커스가 이동**합니다. (Cursor, VS Code, iTerm2, Terminal, Ghostty, WezTerm 등 자동 감지)
 
@@ -23,9 +23,16 @@ claude plugin install ide-notify@camomilekr
 | 이벤트 | 시점 |
 |---|---|
 | `Stop` | Claude가 모든 작업을 마쳤을 때 |
+| `SubagentStop` | 서브에이전트 하나가 작업을 마쳤을 때 (알림에 에이전트 이름 표시) |
 | `Notification` | 승인 요청 / 결정 대기 / 입력 대기 (`permission_prompt`, `elicitation_dialog`, `agent_needs_input`) |
 
-두 훅 모두 `async`라 알림 발송이 세션을 붙잡지 않습니다.
+세 훅 모두 `async`라 알림 발송이 세션을 붙잡지 않습니다.
+
+`SubagentStop`은 모든 서브에이전트에 대해 울립니다. 서브에이전트를 여러 개 병렬로 띄우면 그만큼 알림이 옵니다. 특정 에이전트만 받고 싶다면 `hooks/hooks.json`의 `SubagentStop` 항목에 `matcher`를 추가하세요. matcher는 에이전트 이름(`agent_type`)에 정규식으로 매칭됩니다.
+
+```json
+{ "matcher": "^(code-reviewer|Plan)$", "hooks": [ ... ] }
+```
 
 ## 플랫폼별 지원
 
@@ -97,7 +104,7 @@ cat ~/.claude/ide-notify/notifier.log
 .claude-plugin/
   plugin.json          플러그인 매니페스트
 hooks/
-  hooks.json           Stop / Notification 훅 등록
+  hooks.json           Stop / SubagentStop / Notification 훅 등록
 scripts/
   notify.sh            알림 발송 (플랫폼 분기 + 폴백)
   build-notifier.sh    ClaudeCodeNotifier.app 빌드

@@ -2,11 +2,13 @@
 # ide-notify: Claude Code 시스템 알림 훅 (크로스플랫폼)
 #
 # 사용법: notify.sh <이벤트종류>
-#   stop  - Claude 가 모든 작업을 마쳤을 때
-#   input - 사용자의 승인/결정이 필요할 때
+#   stop     - Claude 가 모든 작업을 마쳤을 때
+#   subagent - 서브에이전트 하나가 작업을 마쳤을 때
+#   input    - 사용자의 승인/결정이 필요할 때
 #
 # 입력: stdin 으로 들어오는 훅 JSON 페이로드
 #   Notification 이벤트는 .message 에 알림 문구가 담겨 있다.
+#   SubagentStop 이벤트는 .agent_type 에 에이전트 이름이 담겨 있다.
 #
 # 지원 플랫폼: macOS(전용 앱 또는 osascript), Linux(notify-send),
 #              WSL·Windows(PowerShell), 그 외에는 터미널 벨로 폴백한다.
@@ -39,13 +41,18 @@ STATE_DIR="$HOME/.claude/ide-notify"
 
 # --- 페이로드에서 알림 문구 추출 (jq 가 없거나 실패해도 진행) ---
 msg=""
+agent=""
 if [[ -n "$payload" ]] && command -v jq >/dev/null 2>&1; then
   msg=$(printf '%s' "$payload" | jq -r '.message // empty' 2>/dev/null) || msg=""
+  agent=$(printf '%s' "$payload" | jq -r '.agent_type // empty' 2>/dev/null) || agent=""
 fi
 
 case "$event" in
-  stop)  [[ -n "$msg" ]] || msg="작업을 모두 마쳤습니다." ;;
-  *)     [[ -n "$msg" ]] || msg="확인이 필요합니다." ;;
+  stop)     [[ -n "$msg" ]] || msg="작업을 모두 마쳤습니다." ;;
+  # SubagentStop 에는 .message 가 없으므로 에이전트 이름으로 문구를 만든다.
+  subagent) if [[ -n "$agent" ]]; then msg="$agent 서브에이전트가 작업을 마쳤습니다."
+            else msg="서브에이전트가 작업을 마쳤습니다."; fi ;;
+  *)        [[ -n "$msg" ]] || msg="확인이 필요합니다." ;;
 esac
 
 project=$(basename "${CLAUDE_PROJECT_DIR:-$PWD}")
