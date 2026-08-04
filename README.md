@@ -1,5 +1,8 @@
 # IDE Notify
 
+> **📦 이 레포지토리는 [camomilekr/claude-code-plugins](https://github.com/camomilekr/claude-code-plugins)로 이전되었습니다.**
+> 플러그인 본체는 [plugins/ide-notify](https://github.com/camomilekr/claude-code-plugins/tree/main/plugins/ide-notify)에서 관리됩니다. 이 레포는 아카이브 상태로 유지됩니다.
+
 Claude Code가 **작업을 마쳤을 때**, **서브에이전트가 작업을 시작·완료했을 때**, 그리고 **승인·결정을 기다릴 때** 시스템 알림을 보내는 플러그인입니다.
 
 macOS에서는 알림을 클릭하면 **세션을 띄운 터미널/IDE로 포커스가 이동**합니다. (Cursor, VS Code, iTerm2, Terminal, Ghostty, WezTerm 등 자동 감지)
